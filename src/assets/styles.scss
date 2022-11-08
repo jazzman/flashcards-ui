@@ -1,2 +1,23 @@
 // Import all of Bootstrap's CSS
 @import "../node_modules/bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+//.nav-link {
+//  @extend .text-white
+//}
+
+.nav-link:not(.router-link-active) {
+  @extend .text-white
+}
+
+.router-link-active {
+  @extend .text-secondary
+}
+
+.ql-editor {
+  height: 200px;
+}
+
+.breadcrumb-item a {
+  @extend .link-secondary
+}
