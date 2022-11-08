@@ -14,9 +14,5 @@ export default defineConfig({
       '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
     }
   },
-  base: '/flashcards-ui/',
-  server: {
-    port: 5000,
-    hot: true
-  }
+  base: '/flashcards-ui/'
 })
