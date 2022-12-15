@@ -9,9 +9,20 @@ const path = require('path')
 export default defineConfig({
   plugins: [vue()],
   resolve: {
+
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+    }
+  },
+  server: {
+    port: 9998,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9999/',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      }
     }
   }
 })

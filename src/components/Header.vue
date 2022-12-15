@@ -40,10 +40,15 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Create a New Deck</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="">
+<!--        <form @submit="saveServerSideDeck" class="needs-validation" novalidate>-->
+        <form @submit.prevent="saveDeck" class="needs-validation" novalidate>
           <div class="modal-body">
             <div class="mb-3">
-              <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Deck title">
+              <input v-model="fields.name" type="text" class="form-control" id="validation-name" placeholder="Deck Name" required>
+              <div id="validation-name-error" class="invalid-feedback">Deck name is required</div>
+            </div>
+            <div class="mb-3">
+              <textarea v-model="fields.description" type="text" class="form-control" id="validation-name" placeholder="Deck Description"></textarea>
             </div>
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
@@ -52,7 +57,9 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button @click="saveDeck" data-bs-dismiss="modal" type="button" class="btn btn-primary">Create</button>
+            <button class="btn btn-primary">Create</button>
+<!--            <button type="submit" class="btn btn-primary">Create</button>-->
+<!--            <button @click="saveDeck" data-bs-dismiss="modal"  class="btn btn-primary">Create</button>-->
           </div>
         </form>
       </div>
@@ -62,18 +69,51 @@
 
 <script>
 import * as bootstrap from 'bootstrap'
+import axios from 'axios'
 
 export default {
+  data() {
+    return {
+      fields: {
+        name: null,
+        description: null
+      },
+      deck: null,
+      modal: null
+    }
+  },
   methods: {
     onCreateDeckClick(event, navigate) {
-      const myModal = new bootstrap.Modal(document.getElementById('createDeckModal'), {})
-      myModal.show()
+      this.modal = new bootstrap.Modal(document.getElementById('createDeckModal'), {})
+      this.modal.show()
       navigate(event)
     },
-    saveDeck() {
-      const myModal = new bootstrap.Modal(document.getElementById('createDeckModal'), {})
-      myModal.hide()
-    }
+    saveDeck(e) {
+      const form = document.querySelectorAll('.needs-validation')[0];
+
+      if (!form.checkValidity()) {
+        e.preventDefault()
+        e.stopPropagation()
+      } else {
+        axios
+          .post('/api/decks', {'name': this.fields.name})
+          .then(response => {
+            this.deck = response.data
+            this.$store.commit("refreshDecks")
+            this.fields.name = null
+            this.fields.description = null
+            this.modal.hide()
+          })
+          .catch(error => {
+            Object.entries(error.response.data.errors).forEach(([key, value]) => {
+              document.getElementById('validation-' + key).classList.add('is-invalid')
+              document.getElementById('validation-' + key + '-error').textContent = value
+            })
+          })
+      }
+
+      form.classList.add('was-validated')
+    },
   },
 }
 </script>
