@@ -8,7 +8,7 @@
               <router-link to="/">My Decks</router-link>
             </li>
             <li class="breadcrumb-item">
-              <router-link :to="{name: 'Cards', params: {id: 1}}" v-if="deck">{{ deck.name }}</router-link>
+              <router-link :to="{name: 'Cards', params: {id: deck.id}}" v-if="deck">{{ deck.name }}</router-link>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Create a New Card</li>
           </ol>
@@ -38,10 +38,10 @@
       <router-link to="/" custom v-slot="{ href, navigate }">
         <a @click="$router.back()" class="btn btn-secondary" role="button">Cancel</a>
       </router-link>
-      <router-link :to="{name: 'Cards', params: {id: 1}}" custom v-slot="{ href, navigate }">
+      <router-link :to="{name: 'Cards', params: {id: $route.params.deckId}}" custom v-slot="{ href, navigate }">
         <a :href="href" @click="onSaveClick($event, navigate)" class="btn btn-warning" role="button">Save</a>
       </router-link>
-      <router-link :to="{name: 'CreateCard', params: {deckId: 1}}" custom v-slot="{ href, navigate }">
+      <router-link :to="{name: 'CreateCard', params: {deckId: $route.params.deckId}}" custom v-slot="{ href, navigate }">
         <a :href="href" @click="onSaveAndNewClick($event, navigate)" class="btn btn-success" role="button">Save and Create One More</a>
       </router-link>
     </div>
@@ -77,6 +77,8 @@
         axios.post('/api/decks/' + this.$route.params.deckId + '/cards', this.card)
       },
       onSaveAndNewClick(event, navigate) {
+        axios.post('/api/decks/' + this.$route.params.deckId + '/cards', this.card)
+        this.$route.push('Create')
       }
     },
     computed: {

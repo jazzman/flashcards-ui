@@ -11,7 +11,10 @@
     </div>
   </div>
 
-  <div class="list-group w-auto" v-if="list">
+  <div class="text-center m-5" v-if="isLoading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div class="list-group w-auto" v-else>
     <div v-for="deck in list" class="list-group-item list-group-item-action d-flex gap-3 py-3 deck" aria-current="true">
       <i class="bi bi-stack rounded-circle flex-shrink-0" style="font-size: 32px" ></i>
       <div class="d-flex gap-2 w-100 justify-content-between">
@@ -56,7 +59,6 @@ export default {
   data() {
     return {
       deckId: null,
-      // decks: null
     }
   },
   methods: {
@@ -66,15 +68,23 @@ export default {
     confirmRemoval() {
       axios
         .delete('/api/decks/' + this.deckId)
-        .then(() => document.querySelector('[data-deck-id=\'' + this.deckId + '\']').closest('.deck').remove())
+        .then(() => {
+          document.querySelector('[data-deck-id=\'' + this.deckId + '\']').closest('.deck').remove()
+          this.$store.commit('dropDeck', this.deckId)
+        })
     }
   },
   created() {
-    this.$store.commit("refreshDecks")
+    if (this.$store.state.decks == null) {
+      this.$store.commit("refreshDecks")
+    }
   },
   computed: {
     list() {
       return this.$store.state.decks
+    },
+    isLoading() {
+      return this.$store.state.isLoading
     }
   }
 }

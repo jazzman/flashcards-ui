@@ -51,7 +51,7 @@
               <textarea v-model="fields.description" type="text" class="form-control" id="validation-name" placeholder="Deck Description"></textarea>
             </div>
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+              <input class="form-check-input" v-model="fields.isPrivate" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
               <label class="form-check-label" for="flexSwitchCheckChecked">Private</label>
             </div>
           </div>
@@ -76,7 +76,8 @@ export default {
     return {
       fields: {
         name: null,
-        description: null
+        description: null,
+        isPrivate: true
       },
       deck: null,
       modal: null
@@ -96,7 +97,11 @@ export default {
         e.stopPropagation()
       } else {
         axios
-          .post('/api/decks', {'name': this.fields.name})
+          .post('/api/decks', {
+            'name': this.fields.name,
+            'description': this.fields.description,
+            'isPrivate': this.fields.isPrivate
+          })
           .then(response => {
             this.deck = response.data
             this.$store.commit("refreshDecks")
