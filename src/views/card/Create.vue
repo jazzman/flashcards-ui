@@ -8,7 +8,7 @@
               <router-link to="/">My Decks</router-link>
             </li>
             <li class="breadcrumb-item">
-              <router-link :to="{name: 'Cards', params: {id: 1}}">OCP Java SE 17 Developer (1Z0-829)</router-link>
+              <router-link :to="{name: 'Cards', params: {id: 1}}" v-if="deck">{{ deck.name }}</router-link>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Create a New Card</li>
           </ol>
@@ -22,13 +22,13 @@
       <div class="col">
         <h2>Question</h2>
           <div>
-            <QuillEditor v-model:content="question" contentType="html" toolbar="essential" theme="snow" />
+            <QuillEditor v-model:content="card.question" contentType="html" toolbar="essential" theme="snow" />
           </div>
       </div>
       <div class="col">
         <h2>Answer</h2>
           <div>
-            <QuillEditor v-model:content="answer" contentType="html" toolbar="essential" theme="snow" />
+            <QuillEditor v-model:content="card.answer" contentType="html" toolbar="essential" theme="snow" />
           </div>
       </div>
     </div>
@@ -52,18 +52,36 @@
 <script>
   import { QuillEditor } from '@vueup/vue-quill'
   import '@vueup/vue-quill/dist/vue-quill.snow.css';
+  import axios from "axios";
 
   export default {
     data() {
       return {
-        question: null,
-        answer: null
+        card: {
+          question: null,
+          answer: null
+        }
+      }
+    },
+    async created() {
+      if (this.$store.state.deck == null || this.$store.state.deck.id !== parseInt(this.$route.params.deckId)) {
+        const response = await axios.get('/api/decks/' + this.$route.params.deckId)
+
+        if (response.data) {
+          this.$store.state.deck = response.data
+        }
       }
     },
     methods: {
       onSaveClick(event, navigate) {
+        axios.post('/api/decks/' + this.$route.params.deckId + '/cards', this.card)
       },
       onSaveAndNewClick(event, navigate) {
+      }
+    },
+    computed: {
+      deck() {
+        return this.$store.state.deck
       }
     },
     components: {

@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <div class="list-group w-auto">
+  <div class="list-group w-auto" v-if="list">
     <div v-for="deck in list" class="list-group-item list-group-item-action d-flex gap-3 py-3 deck" aria-current="true">
       <i class="bi bi-stack rounded-circle flex-shrink-0" style="font-size: 32px" ></i>
       <div class="d-flex gap-2 w-100 justify-content-between">
